@@ -1,0 +1,28 @@
+---
+- hosts: webservers 
+  become: True
+  tasks:
+    - name: Install prerequisites packages
+      yum:
+        name: unzip
+        state: present
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+    - name: Install JAVA
+      apt:
+        name: default-jdk
+        state: present
+    - name: Download and Unarchive Tomcat
+      unarchive: 
+        src: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.70/bin/apache-tomcat-9.0.70.tar.gz 
+        dest: /home/khanans/tomcat
+        remote_src: yes
+    - name: Change ownership of Tomcat installation
+      file: path=/home/khanans/tomcat/ owner=khanans group=khanans state=directory recurse=yes
+    - name: start apache-tomcat-8.O.27
+      shell: /home/khanans/tomcat/apache-tomcat-9.0.70/bin/startup.sh
+    - name: Deploy static website
+      copy:
+        src: index.html
+        dest: /var/www/html/
+...
